@@ -15,6 +15,13 @@ public class TweetUserFirstNameParserTest {
 
     @Test
     public void tweetUserName() {
-        assertEquals("Foo", tweetUserFirstNameParser.apply("{ \"user\": { \"name\": \"Foo Bar\" }}"));
+        assertEquals("foo",
+                tweetUserFirstNameParser.apply("{ \"user\": { \"name\": \"Foo Bar\", \"id_str\": \"123\" }}").getName());
+    }
+
+    @Test
+    public void tweetUserId() {
+        assertEquals("123",
+                tweetUserFirstNameParser.apply("{ \"user\": { \"name\": \"Foo Bar\", \"id_str\": \"123\" }}").getId());
     }
 }

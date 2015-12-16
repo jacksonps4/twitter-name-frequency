@@ -3,6 +3,7 @@ package com.minorityhobbies.tnf.services;
 import com.minorityhobbies.tnf.api.NameFrequency;
 import com.minorityhobbies.tnf.core.DelimitedStreamTweetClient;
 import com.minorityhobbies.tnf.core.TweetUserFirstNameParser;
+import com.minorityhobbies.tnf.domain.TwitterAccountName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,9 +13,7 @@ import javax.ejb.Schedule;
 import javax.ejb.Schedules;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -23,6 +22,7 @@ import java.util.stream.Collectors;
 @Startup
 public class TwitterAccountNameFrequencyDetector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Set<TwitterAccountName> accountsAlreadyProcessed = new HashSet<>();
     private final Map<String, Integer> frequency = new ConcurrentHashMap<>();
     private final AtomicLong tweetCount = new AtomicLong();
     private DelimitedStreamTweetClient delimitedStreamTweetClient;
@@ -48,9 +48,10 @@ public class TwitterAccountNameFrequencyDetector {
 
     private void findAndStoreName(String tweetData) {
         try {
-            String firstName = tweetUserFirstNameParser.apply(tweetData);
-            if (firstName != null) {
-                frequency.compute(firstName, (name, currentCount) -> currentCount == null ? 1 : currentCount + 1);
+            TwitterAccountName twitterAccount = tweetUserFirstNameParser.apply(tweetData);
+            if (twitterAccount != null && accountsAlreadyProcessed.add(twitterAccount)) {
+                frequency.compute(twitterAccount.getName(),
+                        (name, currentCount) -> currentCount == null ? 1 : currentCount + 1);
                 tweetCount.incrementAndGet();
             }
         } catch (RuntimeException e) {
@@ -69,6 +70,10 @@ public class TwitterAccountNameFrequencyDetector {
 
     public long tweetCount() {
         return tweetCount.get();
+    }
+
+    public long uniqueAccounts() {
+        return accountsAlreadyProcessed.size();
     }
 
     @Schedules(@Schedule(hour = "*", minute = "*", persistent = false))

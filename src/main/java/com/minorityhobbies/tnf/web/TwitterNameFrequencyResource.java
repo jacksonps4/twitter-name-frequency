@@ -34,9 +34,16 @@ public class TwitterNameFrequencyResource {
     }
 
     @GET
-    @Path("count")
+    @Path("tweet-count.txt")
     @Produces(MediaType.TEXT_PLAIN)
     public long tweetCount() {
         return twitterAccountNameFrequencyDetector.tweetCount();
+    }
+
+    @GET
+    @Path("user-count.txt")
+    @Produces(MediaType.TEXT_PLAIN)
+    public long userCount() {
+        return twitterAccountNameFrequencyDetector.uniqueAccounts();
     }
 }

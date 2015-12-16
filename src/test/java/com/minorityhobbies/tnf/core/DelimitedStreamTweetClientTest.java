@@ -19,7 +19,7 @@ public class DelimitedStreamTweetClientTest {
 
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         delimitedStreamTweetClient = new DelimitedStreamTweetClient(cl.getResource("tweet-stream.json").toExternalForm(),
-                tweets::add);
+                tweets::add, false);
     }
 
     @After
@@ -30,7 +30,7 @@ public class DelimitedStreamTweetClientTest {
 
     @Test
     public void count() throws InterruptedException {
-        Thread.sleep(100L);
+        Thread.sleep(200L);
         assertEquals(2, tweets.size());
     }
 }
