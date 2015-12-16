@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -9,32 +11,9 @@
     </parent>
 
     <artifactId>twitter-name-frequency</artifactId>
-    <version>1.0</version>
+    <version>1.0-SNAPSHOT</version>
 
     <packaging>war</packaging>
-
-    <licenses>
-        <license>
-            <name>The MIT License (MIT)</name>
-            <distribution>repo</distribution>
-            <url>http://opensource.org/licenses/MIT</url>
-        </license>
-    </licenses>
-    
-    <developers>
-        <developer>
-            <id>chrisw</id>
-            <name>Chris Wraith</name>
-            <email>chrisw@minorityhobbies.com</email>
-        </developer>
-    </developers>
-    
-    <scm>
-        <connection>scm:git:https://github.com/jacksonps4/twitter-name-frequency.git</connection>
-        <developerConnection>scm:git:git@github.com:jacksonps4/twitter-name-frequency.git</developerConnection>
-        <url>https://github.com/jacksonps4</url>
-        <tag>twitter-name-frequency-1.0</tag>
-    </scm>
 
     <dependencies>
         <dependency>
@@ -63,17 +42,4 @@
     <build>
         <finalName>${project.artifactId}</finalName>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>releases-repository</id>
-            <uniqueVersion>false</uniqueVersion>
-            <url>scpexe://minorityhobbies.com/maven/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots-repository</id>
-            <uniqueVersion>true</uniqueVersion> 
-            <url>scpexe://minorityhobbies.com/maven/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
