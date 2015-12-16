@@ -15,6 +15,29 @@
 
     <packaging>war</packaging>
 
+    <licenses>
+        <license>
+            <name>The MIT License (MIT)</name>
+            <distribution>repo</distribution>
+            <url>http://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+        
+    <developers>
+        <developer>
+            <id>chrisw</id>
+            <name>Chris Wraith</name>
+            <email>chrisw@minorityhobbies.com</email>
+        </developer>
+    </developers>
+        
+    <scm>
+        <connection>scm:git:https://github.com/jacksonps4/twitter-name-frequency.git</connection>
+        <developerConnection>scm:git:git@github.com:jacksonps4/twitter-name-frequency.git</developerConnection>
+        <url>https://github.com/jacksonps4</url>
+        <tag>HEAD</tag>
+    </scm>  
+
     <dependencies>
         <dependency>
             <groupId>javax</groupId>
