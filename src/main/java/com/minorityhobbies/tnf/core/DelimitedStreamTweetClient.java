@@ -34,6 +34,8 @@ public class DelimitedStreamTweetClient implements AutoCloseable {
     }
 
     private void start() {
+        long backoffDelayMills = 0L;
+
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 InputStream in = null;
@@ -45,14 +47,19 @@ public class DelimitedStreamTweetClient implements AutoCloseable {
                     }
                     in = urlConnection.getInputStream();
                 } catch (IOException e) {
-                    logger.error("Failed to establish connection to read tweets", e);
+                    logger.error("Failed to establish HTTP connection to read tweets", e);
+                    backoffDelayMills = backoffExponentially(backoffDelayMills);
                 }
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
                     while (!Thread.currentThread().isInterrupted()) {
                         String line = reader.readLine();
+
                         if (line == null) {
                             logger.info("End of stream reached");
                             return;
+                        } else {
+                            // successful connection: reset the delay
+                            backoffDelayMills = 0;
                         }
 
                         if (line.trim().length() > 0) {
@@ -67,15 +74,41 @@ public class DelimitedStreamTweetClient implements AutoCloseable {
                     }
                 } catch (IOException e) {
                     logger.error("Failed to read tweets", e);
+                    backoffDelayMills = backoffLinearly(backoffDelayMills);
                 }
             } catch (Exception e) {
                 logger.error("Error handling tweets", e);
+                backoffDelayMills = backoffExponentially(backoffDelayMills);
             }
 
             if (!autoRetry) {
                 return;
             }
+
+            try {
+                Thread.sleep(backoffDelayMills);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
+    }
+
+    private long backoffExponentially(long backoffDelayMills) {
+        if (backoffDelayMills == 0) {
+            return 5000L;
+        } else if (backoffDelayMills < 320000) {
+            return 2 * backoffDelayMills;
+        }
+        return backoffDelayMills;
+    }
+
+    private long backoffLinearly(long backoffDelayMills) {
+        if (backoffDelayMills == 0) {
+            return 250;
+        } else if (backoffDelayMills < 16000) {
+            return 250 + backoffDelayMills;
+        }
+        return backoffDelayMills;
     }
 
     @Override
