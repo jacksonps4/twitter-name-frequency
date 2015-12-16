@@ -63,4 +63,17 @@
     <build>
         <finalName>${project.artifactId}</finalName>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>releases-repository</id>
+            <uniqueVersion>false</uniqueVersion>
+            <url>scpexe://minorityhobbies.com/maven/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots-repository</id>
+            <uniqueVersion>true</uniqueVersion> 
+            <url>scpexe://minorityhobbies.com/maven/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
