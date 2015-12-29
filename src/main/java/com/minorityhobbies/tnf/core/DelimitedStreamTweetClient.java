@@ -21,15 +21,17 @@ public class DelimitedStreamTweetClient implements AutoCloseable {
     private final Consumer<String> consumer;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final boolean autoRetry;
+    private final String accessToken;
 
-    public DelimitedStreamTweetClient(String uri, Consumer<String> tweetDataConsumer) {
-        this(uri, tweetDataConsumer, true);
+    public DelimitedStreamTweetClient(String uri, Consumer<String> tweetDataConsumer, String accessToken) {
+        this(uri, tweetDataConsumer, true, accessToken);
     }
 
-    DelimitedStreamTweetClient(String uri, Consumer<String> tweetDataConsumer, boolean autoRetry) {
+    DelimitedStreamTweetClient(String uri, Consumer<String> tweetDataConsumer, boolean autoRetry, String accessToken) {
         this.uri = URI.create(uri);
         this.consumer = tweetDataConsumer;
         this.autoRetry = autoRetry;
+        this.accessToken = accessToken;
         executor.submit(this::start);
     }
 
@@ -43,7 +45,7 @@ public class DelimitedStreamTweetClient implements AutoCloseable {
                     URLConnection urlConnection = uri.toURL().openConnection();
                     if (urlConnection instanceof HttpURLConnection) {
                         HttpURLConnection conn = (HttpURLConnection) urlConnection;
-                        conn.setRequestProperty("Cookie", "jacksonps4-signon=19374881-A2wL5ImOmnN4Li4W9eKfDx9AOXeQnWxo7jxi50tHo");
+                        conn.setRequestProperty("Cookie", "jacksonps4-signon=" + accessToken);
                     }
                     in = urlConnection.getInputStream();
                 } catch (IOException e) {
@@ -63,13 +65,18 @@ public class DelimitedStreamTweetClient implements AutoCloseable {
                         }
 
                         if (line.trim().length() > 0) {
-                            Integer tweetLength = Integer.parseInt(line);
-                            byte[] b = new byte[tweetLength];
-                            for (int i = 0; i < b.length; i++) {
-                                b[i] = (byte) reader.read();
+                            try {
+                                Integer tweetLength = Integer.parseInt(line);
+                                byte[] b = new byte[tweetLength];
+                                for (int i = 0; i < b.length; i++) {
+                                    b[i] = (byte) reader.read();
+                                }
+                                String tweetData = new String(b);
+                                consumer.accept(tweetData);
+                            } catch (NumberFormatException e) {
+                                logger.error("No delimiter: received response: " + line);
+                                backoffDelayMills = backoffExponentially(backoffDelayMills);
                             }
-                            String tweetData = new String(b);
-                            consumer.accept(tweetData);
                         }
                     }
                 } catch (IOException e) {

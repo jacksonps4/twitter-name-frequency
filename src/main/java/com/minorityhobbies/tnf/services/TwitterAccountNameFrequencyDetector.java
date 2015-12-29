@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import javax.ejb.Schedule;
 import javax.ejb.Schedules;
 import javax.ejb.Singleton;
@@ -32,11 +33,14 @@ public class TwitterAccountNameFrequencyDetector {
         this.tweetUserFirstNameParser = new TweetUserFirstNameParser();
     }
 
+    @Resource(mappedName = "config/accessToken")
+    String accessToken;
+
     @PostConstruct
     public void init() {
         delimitedStreamTweetClient = new DelimitedStreamTweetClient(
                 "http://localhost:8080/jacksonps4/api/twitter/s/statuses/sample.json?delimited=length",
-                this::findAndStoreName);
+                this::findAndStoreName, accessToken);
     }
 
     @PreDestroy

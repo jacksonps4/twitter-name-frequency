@@ -19,7 +19,7 @@ public class DelimitedStreamTweetClientTest {
 
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         delimitedStreamTweetClient = new DelimitedStreamTweetClient(cl.getResource("tweet-stream.json").toExternalForm(),
-                tweets::add, false);
+                tweets::add, false, "token");
     }
 
     @After

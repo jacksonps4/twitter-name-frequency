@@ -1,0 +1,1 @@
+create-custom-resource --restype java.lang.String --factoryclass org.glassfish.resources.custom.factory.StringFactory --property Value=<twitter-access-token> config/accessToken
